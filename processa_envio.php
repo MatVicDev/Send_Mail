@@ -14,6 +14,7 @@ class Mensagem
 	private $para = null;
 	private $assunto = null;
 	private $mensagem = null;
+    public $status = array('codigo' => null, 'descricao' => '');
 
 	public function __set($attr, $value)
 	{
@@ -43,8 +44,7 @@ $mensagem->__set('mensagem', $_POST['mensagem']);
 
 if(!$mensagem->validarMensagem()) {
 
-	echo "Mensagem inválida!";
-	die;
+	header('Location: index.php');
 }
 
 $mail = new PHPMailer(true);
@@ -70,9 +70,66 @@ try {
     $mail->AltBody = 'Não foi possível carregar conteúdo HTML'; // Mensagem alternativa
 
     $mail->send();
-    echo 'Mensagem enviada com sucesso!';
+
+    $mensagem->status['codigo'] = 1;
+    $mensagem->status['descricao'] = 'Mensagem enviada com sucesso!';
+
 } catch (Exception $e) {
-    echo "Não foi possível enviar a mensagem. Por favor, tente mais tarde! <br>";
-    echo "Detalhes: {$mail->ErrorInfo}";
+    $mensagem->status['codigo'] = 2;
+    $mensagem->status['descricao'] = 'Não foi possível enviar a mensagem. Por favor, tente mais tarde! Detalhes: ' . $mail->ErrorInfo;
 }
 ?>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Send Mail</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    </head>
+    <body>
+
+        <div class="container">
+            
+            <div class="py-3 text-center">
+                <img class="d-block mx-auto mb-2" src="imagens/logo.png" alt="" width="72" height="72">
+                <h2>Send Mail</h2>
+                <p class="lead">Seu app de envio de e-mails particular!</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    
+                    <?php if($mensagem->status['codigo'] == 1) { ?>         <!-- Caso de sucesso -->
+
+                        <div class="container">
+
+                            <h1 class="display-4 text-success">Sucesso!</h1>
+                            <p>
+                                <?= $mensagem->status['descricao'] ?>
+                            </p>
+                            <a href="index.php" class="btn btn-success btn-lg mt-5 text-white">Voltar</a>
+                            
+                        </div>
+                    <?php } ?>
+
+                    <?php if($mensagem->status['codigo'] == 2) { ?>         <!-- Caso de erro -->
+
+                        <div class="container">
+
+                            <h1 class="display-4 text-danger">Ops!</h1>
+                            <p>
+                                <?= $mensagem->status['descricao'] ?>
+                            </p>
+                            <a href="index.php" class="btn btn-danger btn-lg mt-5 text-white">Voltar</a>
+                            
+                        </div>
+                    <?php } ?>
+
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
