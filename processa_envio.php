@@ -61,17 +61,13 @@ try {
 
     // Remetente e destinatário
     $mail->setFrom('exemplo@email.com', 'Remetente');           // Remetente
-    $mail->addAddress('ellen@examplo.com', 'Destinatário');     // Destinatário
-
-    //Attachments
-    // $mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
-    // $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
+    $mail->addAddress($mensagem->__get('para'));                // Destinatário
 
     // Conteúdo
-    $mail->isHTML(true);                                  // Set email format to HTML
-    $mail->Subject = 'Assunto';               // Assunto
-    $mail->Body    = 'Conteúdo do <b>e-mail!</b>';   // Mensagem
-    $mail->AltBody = 'Conteúdo do e-mail!';    // Mensagem alternativa
+    $mail->isHTML(true);                                        // Definindo o formato HTML
+    $mail->Subject = $mensagem->__get('assunto');               // Assunto
+    $mail->Body    = $mensagem->__get('mensagem');              // Mensagem
+    $mail->AltBody = 'Não foi possível carregar conteúdo HTML'; // Mensagem alternativa
 
     $mail->send();
     echo 'Mensagem enviada com sucesso!';
